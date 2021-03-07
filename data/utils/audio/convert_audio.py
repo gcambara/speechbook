@@ -3,10 +3,9 @@ Converts audio files within a folder to the specified format.
 """
 
 import os
+import sox
 import argparse
 from joblib import Parallel, delayed
-import multiprocessing
-import sox
 
 parser = argparse.ArgumentParser(description="Convert MP3 to WAV") 
 parser.add_argument("--src", default="", help="source directory with MP3 files", required=True)
