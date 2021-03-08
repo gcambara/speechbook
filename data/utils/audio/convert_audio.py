@@ -7,6 +7,30 @@ import sox
 import argparse
 from joblib import Parallel, delayed
 
+def format_arguments(arguments):
+    """Returns numerical arguments as int type, or None if not set."""
+    formated_arguments = []
+    for argument in arguments:
+        if argument:
+            argument = int(argument)
+        formated_arguments.append(argument)
+    return formated_arguments
+
+def convert_sample(src, dst, file_name, from_type, to_type, sampling_rate, channels, bit_depth):
+    """Converts a single file to the desired format."""
+    src_file_path = os.path.join(src, file_name)
+    if to_type:
+        dst_file_path = os.path.join(dst, file_name.replace(f'.{from_type}', f'.{to_type}'))
+    else:
+        dst_file_path = os.path.join(dst, file_name)
+
+    tfm = sox.Transformer()
+    tfm.set_output_format(file_type=to_type, rate=sampling_rate, bits=bit_depth, channels=channels)
+    tfm.build(src_file_path, dst_file_path)
+
+    if args.remove_mp3:
+        os.system(f"rm {src_file_path}")
+
 parser = argparse.ArgumentParser(description="Convert MP3 to WAV") 
 parser.add_argument("--src", default="", help="source directory with MP3 files", required=True)
 parser.add_argument("--dst", default="", help="destination directory with WAV files", required=True)
@@ -21,20 +45,7 @@ args = parser.parse_args()
 print("Arguments")
 print(args)
 
-def convert_sample(src, dst, file_name, from_type, to_type, sampling_rate, channels, bit_depth):
-    """Converts a single file to the desired format."""
-    src_file_path = os.path.join(src, file_name)
-    if to_type:
-        dst_file_path = os.path.join(dst, file_name.replace(f'.{from_type}', f'.{to_type}'))
-    else:
-        dst_file_path = os.path.join(dst, file_name)
-
-    tfm = sox.Transformer()
-    tfm.set_output_format(file_type=to_type, rate=int(sampling_rate), bits=int(bit_depth), channels=int(channels))
-    tfm.build(src_file_path, dst_file_path)
-
-    if args.remove_mp3:
-        os.system(f"rm {src_file_path}")
+sampling_rate, bit_depth, channels = format_arguments([args.sampling_rate, args.bit_depth, args.channels])
 
 file_names = []
 for root, directories, files in os.walk(args.src):
@@ -44,4 +55,4 @@ for root, directories, files in os.walk(args.src):
 
 os.makedirs(args.dst, exist_ok=True)
 print(f"Converting {args.from_type} files under directory {args.src}")
-results = Parallel(n_jobs=args.workers)(delayed(convert_sample)(args.src, args.dst, i, args.from_type, args.to_type, args.sampling_rate, args.channels, args.bit_depth) for i in file_names)
+results = Parallel(n_jobs=args.workers)(delayed(convert_sample)(args.src, args.dst, i, args.from_type, args.to_type, sampling_rate, channels, bit_depth) for i in file_names)
