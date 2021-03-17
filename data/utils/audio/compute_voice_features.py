@@ -48,7 +48,6 @@ df = pd.read_csv(args.src, sep='\t')
 
 voice_features_list = []
 for index, row in tqdm(df.iterrows()):
-    sample_id = row[0]
     path = row[1]
     assert os.path.isfile(path), f"The path \"{path}\" does not lead to a file! Check that the second column in your tsv file contains paths to audio files."
 
