@@ -16,3 +16,11 @@ For example, for converting mp3 audio files to wav files with 16kHz sampling rat
 ```
 python convert_audio.py --src <path_to_src_folder> --dst <path_to_dst_folder> --from_type mp3 --to_type wav --sampling_rate 16000 --bit_depth 16 --channels 1 --workers 8
 ```
+
+### Computing voice features using Praat
+It is possible to compute several voice features like F0 mean, HNR, jitter or shimmer measurements, using [compute_voice_features.py](https://github.com/gcambara/speechbook/blob/master/data/utils/audio/compute_voice_features.py) script based on Praat-Parselmouth, a Praat wrapper for Python. This is convenient for batch processing of files, where we have a .tsv file with an audio sample per row. The script computes several voice features and appends them with new columns in a new generated .tsv file, that also contains all the information from the original .tsv.
+```
+python compute_voice_features.py --src <path_to_input_tsv> --dst <path_to_output_tsv> --min_f0 50 --max_f0 400
+```
+
+Currently, the mandatory format for the .tsv files is to have the sample ID in the first column, and the path to the audio file in the second one. This is the typical format of .tsv and .lst files adapted for wav2letter/Flashlight and fairseq framework pipelines.
