@@ -8,14 +8,31 @@ Current scripts are specific to our experiments settings, but we plan to flexibi
 
 ## Preparing the setup
 
-First of all, you will need to generate synthesized audio samples for every checkpoint you want to evaluate, and store them in the same directory, with a folder for every checkpoint. For instance, we have generated around 129 utterances from the LJSpeech corpus at every checkpoint, all stored within "generated_speech_vocgan_resamp_16khz_16bits" directory.
+First of all, you will need to generate synthesized audio samples for every checkpoint you want to evaluate, and store them in the same directory, with a folder for every checkpoint. For instance, we have generated around 129 utterances from the [LJSpeech](https://keithito.com/LJ-Speech-Dataset/) corpus at every checkpoint, all stored within "generated_speech_vocgan_resamp_16khz_16bits" directory.
 
 ```
-tree generated_speech_vocgan_resamp_16khz_16bits -L 1
 generated_speech_vocgan_resamp_16khz_16bits
 ├── 100000
 ├── 100800
 ├── 101600
 ├── 102400
+    ├── LJ001-0015_vocgan.wav
+    ├── LJ001-0079_vocgan.wav
+    ├── ...
+├── ...
 ```
 
+The ASR models in this papers work optimally with audio sampled at 16 kHz, with 16 bits per sample. You can use the [convert_audio.py](https://github.com/gcambara/speechbook/blob/master/data/utils/audio/convert_audio.py) script to resample your data, if needed.
+
+To continue with, you will need to use a [Flashlight](https://github.com/facebookresearch/flashlight) Docker image in order to decode with the pre-trained ASRs. Pull one of the CUDA images from the Flashlight [Docker Hub](https://hub.docker.com/r/flml/flashlight/tags).
+
+We decode with 5 different pre-trained ASRs, all of them taken from the [wav2letter++ recipe repository](https://github.com/facebookresearch/wav2letter/tree/master/recipes), specifically from the [MLS](https://github.com/facebookresearch/wav2letter/tree/master/recipes/mls) and the [RASR](https://github.com/facebookresearch/wav2letter/tree/master/recipes/rasr) recipes. We have used the English model from the MLS recipe, and 4 of the models in the RASR one. They are available for download at wav2letter++ repository, as well as here below:
+
+- [am_en_mls_transformer.bin](https://dl.fbaipublicfiles.com/wav2letter/mls/english/am.bin)
+- [am_transformer_ctc_stride3_letters_70Mparams.bin](https://dl.fbaipublicfiles.com/wav2letter/rasr/tutorial/am_transformer_ctc_stride3_letters_70Mparams.bin)
+- [am_transformer_ctc_stride3_letters_300Mparams](https://dl.fbaipublicfiles.com/wav2letter/rasr/tutorial/am_transformer_ctc_stride3_letters_300Mparams.bin)
+- [am_conformer_ctc_stride3_letters_25Mparams](https://dl.fbaipublicfiles.com/wav2letter/rasr/tutorial/am_conformer_ctc_stride3_letters_25Mparams.bin)
+- [am_conformer_ctc_stride3_letters_87Mparams](https://dl.fbaipublicfiles.com/wav2letter/rasr/tutorial/am_conformer_ctc_stride3_letters_87Mparams.bin)
+
+
+We suggest to rename the models to the names stated here above, in case they are different, to ensure correct processing of results.
