@@ -26,5 +26,6 @@ python examples/speech_to_text/prep_librispeech_data.py \
 This script will download the LibriSpeech data and will generate the vocabulary files and a TSV manifest with the sample IDs, paths, transcripts, etc. Now, precompute pitch, jitter and shimmer features, so training and decoding is faster:
 ```
 python examples/speech_to_text/prep_librispeech_feats.py \
-  --output-root ${LS_ROOT} --folder_name vq_features --config-yaml ${SPEECHBOOK_ROOT}/recipes/vq_pitch/config/config_40fb_precomputation.yaml 
+  --output-root ${LS_ROOT} --folder_name vq_features \
+  --config-yaml ${SPEECHBOOK_ROOT}/recipes/vq_pitch/config/config_40fb_precomputation.yaml 
 ```
