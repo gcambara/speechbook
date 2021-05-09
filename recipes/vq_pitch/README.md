@@ -39,4 +39,10 @@ python examples/speech_to_text/prep_librispeech_feats.py \
 
 ## Adapting config files
 
-At this point, all we need is to adapt the files in the provided config files at ```${SPEECHBOOK_ROOT}/recipes/vq_pitch/config```.
+At this point, all we need to do is to set the ```{LS_ROOT}``` path in the provided config files at ```${SPEECHBOOK_ROOT}/recipes/vq_pitch/config```. This can easily be done this way:
+```
+cd ${SPEECHBOOK_ROOT}/recipes/vq_pitch/config
+sed -i 's/{LS_ROOT}/${LS_ROOT}/g' *.yaml
+```
+
+
