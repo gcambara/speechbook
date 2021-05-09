@@ -23,9 +23,20 @@ pip install pandas torchaudio sentencepiece
 python examples/speech_to_text/prep_librispeech_data.py \
   --output-root ${LS_ROOT} --vocab-type unigram --vocab-size 10000
 ``` 
-This script will download the LibriSpeech data and will generate the vocabulary files and a TSV manifest with the sample IDs, paths, transcripts, etc. Now, precompute pitch, jitter and shimmer features, so training and decoding is faster:
+
+This script will download the LibriSpeech data and will generate the vocabulary files and a TSV manifest with the sample IDs, paths, transcripts, etc. The paths in the manifest file will point to the precomputed 80 filterbanks. However, our experiments compute 40 filterbanks on-the-fly, so you can use this other script to generate the manifests pointing to the audio files directly (set the audio format to "wav" or "flac", depending on the downloaded format):
+```
+python ${SPEECHBOOK_ROOT}/data/librispeech/prepare_data.py \
+  --root ${LS_ROOT} --splits all --dst ${LS_ROOT} --audio_format <WAV/FLAC>
+``` 
+
+Even though we compute the filterbanks on-the-fly, we precomputed pitch, jitter and shimmer features, because these are slower to compute and this way we greatly accelerate training:
 ```
 python examples/speech_to_text/prep_librispeech_feats.py \
   --output-root ${LS_ROOT} --folder_name vq_features \
   --config-yaml ${SPEECHBOOK_ROOT}/recipes/vq_pitch/config/config_40fb_precomputation.yaml 
 ```
+
+## Adapting config files
+
+At this point, all we need is to adapt the files in the provided config files at ```${SPEECHBOOK_ROOT}/recipes/vq_pitch/config```.
