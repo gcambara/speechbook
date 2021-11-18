@@ -123,13 +123,15 @@ class CommonVoiceNormalizer():
                             'ế': 'e',
                             'ồ': 'o',
                             'ǔ': 'u',
-                            'ệ': 'e'
+                            'ệ': 'e',
+                            'ß': 'ss'
                         }
 
     def normalize(self, sentence):
         sentence = self.normalizer.normalize_str(sentence)
         sentence = sentence.translate(str.maketrans('', '', string.punctuation))
         sentence = ''.join(self.trans_map.get(ch, ch) for ch in sentence)
+        sentence = sentence.lower()
         return sentence
 
     def get_trans_map(self):
@@ -137,3 +139,11 @@ class CommonVoiceNormalizer():
 
     def get_discard_chars(self):
         return self.discard_by_characters
+
+    def keep_trans_characters(self, characters):
+        ''' Pops out characters from the translation map, 
+            ideal to keep certain characters like ñ in Spanish or
+            ß in German'''
+
+        for char in characters:
+            self.trans_map.pop(char)

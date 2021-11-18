@@ -21,6 +21,6 @@ for tsv_path in tsv_paths:
     df = pd.read_csv(tsv_path, sep='\t')
     sentences = df[args.column].tolist()
     with open(os.path.join(args.dst, filename.replace('.tsv', '.txt')), 'w+') as f:
-        for sentence in sentences:
+        for sentence in tqdm(sentences):
             f.write(f"{sentence}\n")
     print("Done!")
