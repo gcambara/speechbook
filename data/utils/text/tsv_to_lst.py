@@ -27,7 +27,6 @@ for tsv_path in tsv_paths:
     df = pd.read_csv(tsv_path, sep='\t')
     with open(os.path.join(args.dst, filename.replace('.tsv', '.lst')), 'w+') as f:
         for i, row in tqdm(df.iterrows()):
-            print(row)
             transcript = row[args.txt_column]
             path = row[args.path_column]
 
@@ -43,12 +42,10 @@ for tsv_path in tsv_paths:
             if args.base_path != "":
                 path = os.path.join(args.base_path, path)
 
-            print(path)
-            print(transcript)
-            print(sample_id)
-            exit()
+            if args.get_length:
+                length = 5000.0
+            else:
+                length = 5000.0
 
-
-            
-            #f.write(f"{sentence}\n")
+            f.write(f"{sample_id}\t{path}\t{length}\t{transcript}\n")
     print("Done!")
