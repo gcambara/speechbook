@@ -24,3 +24,9 @@ python compute_voice_features.py --src <path_to_input_tsv> --dst <path_to_output
 ```
 
 Currently, the mandatory format for the .tsv files is to have the sample ID in the first column, and the path to the audio file in the second one. This is the typical format of .tsv and .lst files adapted for wav2letter/Flashlight and fairseq framework pipelines.
+
+### Checking database
+Check that audio files within a database have the expected characteristics:
+```
+python check_database.py --src /Users/guillermocambara/Documents/PhD/Data/Fisher2/Lists/Guille_W2L/test.lst --dst ./database_check.txt --column 1 --channels 1 --sampling_rate 16000 --type wav
+```
