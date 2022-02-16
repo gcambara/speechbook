@@ -8,16 +8,33 @@ pipelines.
 
 import os
 import argparse
+import librosa
+import numpy as np
 import pandas as pd
 import parselmouth
 from tqdm import tqdm
 from parselmouth.praat import call
 
+def get_delta_F0(pitch, order=1, width=9, unvoiced_mode='drop_all'):
+    pitch_values = pitch.selected_array['frequency']
+    pitch_values = np.array(pitch_values)
+    
+    if unvoiced_mode == 'drop_all':
+        pitch_values = pitch_values[pitch_values != 0.0]
+    else:
+        raise NotImplementedError
+    
+    delta_pitch = librosa.feature.delta(pitch_values, order=1, width=9)
+    return delta_pitch
+  
 def measure_voice_features(sound, f0min, f0max, unit):
     sound = parselmouth.Sound(sound) # read the sound
     pitch = call(sound, "To Pitch", 0.0, f0min, f0max) #create a praat pitch object
     meanF0 = call(pitch, "Get mean", 0, 0, unit) # get mean pitch
     stdevF0 = call(pitch, "Get standard deviation", 0 ,0, unit) # get standard deviation
+    delta_F0 = get_delta_F0(pitch)
+    mean_delta_F0 = delta_F0.mean()
+    stdev_delta_F0 = delta_F0.std()
     harmonicity = call(sound, "To Harmonicity (cc)", 0.01, 75, 0.1, 1.0)
     hnr = call(harmonicity, "Get mean", 0, 0)
     pointProcess = call(sound, "To PointProcess (periodic, cc)", f0min, f0max)
@@ -33,7 +50,7 @@ def measure_voice_features(sound, f0min, f0max, unit):
     apq11Shimmer =  call([sound, pointProcess], "Get shimmer (apq11)", 0, 0, 0.0001, 0.02, 1.3, 1.6)
     ddaShimmer = call([sound, pointProcess], "Get shimmer (dda)", 0, 0, 0.0001, 0.02, 1.3, 1.6)
 
-    return [meanF0, stdevF0, hnr, localJitter, localabsoluteJitter, rapJitter, ppq5Jitter, ddpJitter, localShimmer, localdbShimmer, apq3Shimmer, aqpq5Shimmer, apq11Shimmer, ddaShimmer]
+    return [meanF0, stdevF0, mean_delta_F0, stdev_delta_F0, hnr, localJitter, localabsoluteJitter, rapJitter, ppq5Jitter, ddpJitter, localShimmer, localdbShimmer, apq3Shimmer, aqpq5Shimmer, apq11Shimmer, ddaShimmer]
 
 parser = argparse.ArgumentParser(description="Compute voice quality features") 
 parser.add_argument("--src", default="", help="source tsv file with speech samples per row", required=True)
@@ -60,7 +77,7 @@ for index, row in tqdm(df.iterrows()):
     voice_features_list.append(current_information)
 
 columns = df.columns.tolist()
-columns += ['mean_f0', 'stdev_f0', 'hnr', 'local_jitter', 'local_absolute_jitter', 'rap_jitter', 'ppq5_jitter', 'ddp_jitter', 'local_shimmer', 'localdb_shimmer', 'apq3_shimmer', 'aqpq5_shimmer', 'apq11_shimmer', 'dda_shimmer']
+columns += ['mean_f0', 'stdev_f0', 'mean_delta_f0', 'stdev_delta_f0', 'hnr', 'local_jitter', 'local_absolute_jitter', 'rap_jitter', 'ppq5_jitter', 'ddp_jitter', 'local_shimmer', 'localdb_shimmer', 'apq3_shimmer', 'aqpq5_shimmer', 'apq11_shimmer', 'dda_shimmer']
 features_df = pd.DataFrame(voice_features_list, columns=columns)
 
 features_df.to_csv(args.dst, sep='\t', index=None)
