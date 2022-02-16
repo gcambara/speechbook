@@ -24,7 +24,7 @@ def get_delta_F0(pitch, order=1, width=9, unvoiced_mode='drop_all'):
     else:
         raise NotImplementedError
     
-    delta_pitch = librosa.feature.delta(pitch_values, order=1, width=9)
+    delta_pitch = librosa.feature.delta(pitch_values, order=order, width=width)
     return delta_pitch
   
 def measure_voice_features(sound, f0min, f0max, unit):
