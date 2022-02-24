@@ -98,4 +98,3 @@ if tokens != "":
             f.write(f"|\n")
         for token in tqdm(sorted(tokens.keys())):
             f.write(f"{token}\n")
-
