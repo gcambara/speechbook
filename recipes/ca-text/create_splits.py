@@ -26,7 +26,7 @@ for word_file in tqdm(words_files):
                     assert len(line_info) == 2, f"Error! Line info len is not 2: {len(line_info)}. Line info = {line_info}"
                     graphemes = line_info[0]
                     phonemes = line_info[1]
-                    phonemes = phonemes.replace('. ', '').replace(' ', '')
+                    phonemes = phonemes.replace(' ', '')
                     spaced_phonemes = ""
                     for phn in phonemes:
                         spaced_phonemes += phn + " "
