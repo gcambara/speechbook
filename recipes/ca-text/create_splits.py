@@ -19,8 +19,8 @@ filtered_words = set()
 first_run = True
 word_file_id = 0
 for word_file in tqdm(words_files):
-    train_file_path = os.path.basename(word_file).replace('.txt', '_train_{word_file_id}.lex')
-    test_file_path = os.path.basename(word_file).replace('.txt', '_test_{word_file_id}.lex')
+    train_file_path = os.path.basename(word_file).replace('.txt', f'_train_{word_file_id}.lex')
+    test_file_path = os.path.basename(word_file).replace('.txt', f'_test_{word_file_id}.lex')
     with open(os.path.join(args.dst, train_file_path), 'w+') as train_file:
         with open(os.path.join(args.dst, test_file_path), 'w+') as test_file:
             with open(word_file, 'r') as f:
